@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ <trees>
+     <tree path="/baice-project/src/main/java/com/ruoyi/project/domain/dto" title="前端发送后端数据包"/>
+     <tree path="/baice-project/src/main/java/com/ruoyi/project/domain/vo" title="后端发送前端数据包"/>
+     <tree path="/baice-project/src/main/java/com/ruoyi/project/domain" title="前后端交互数据包"/>
+     <tree path="/baice-project/src/main/java/com/ruoyi/project/dao" title="dao层"/>
+     <tree path="/baice-project/src/main/java/com/ruoyi/project/controller" title="controller层" extension=""
+           presentableText="" tooltipTitle="" icon="" textColor="" backgroundColor=""/>
+     <tree path="/baice-project/src/main/java/com/ruoyi/project/service" title="service层"/>
+ </trees>

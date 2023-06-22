@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.dao.mapper.ProjectMapper">
+    
+    <resultMap id="projectResultMap" type="Project">
+        <result property="publishTime" column="publish_time"/>
+        <result property="projectPermission" column="project_permission"/>
+        <result property="projectStatus" column="project_status"/>
+        <result property="endTime" column="end_time"/>
+    </resultMap>
+
+    <insert id="insertProject">
+        INSERT INTO lry_project(name, publisher, publish_time, end_time, username, grade, project_permission,
+                                project_status)
+        VALUES (#{name}, #{publisher}, #{publishTime}, #{endTime}, #{username}, #{grade}, #{projectPermission},
+                #{projectStatus})
+    </insert>
+    <select id="selectMyCreateProjects" resultMap="projectResultMap">
+        SELECT *
+        FROM lry_project
+        WHERE publisher = #{publisher}
+    </select>
+</mapper>
