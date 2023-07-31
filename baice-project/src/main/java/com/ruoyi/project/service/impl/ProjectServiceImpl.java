@@ -51,8 +51,10 @@ public class ProjectServiceImpl implements IProjectService {
      * @return
      */
     @Override
-    public List<Project> getMyAllProjects(String username) {
-        List<Project> list = projectMapper.selectMyAllProjects(username);
+    public List getMyAllProjects(String username) {
+        List<Project> list1 = projectMapper.selectMyAllProjects(username);
+        List<ShowProjectVo> list = new LinkedList<ShowProjectVo>();
+        getProjectVo(list1, list);//将数据转换为vo，交给前端页面
         return list;
     }
 
@@ -65,20 +67,7 @@ public class ProjectServiceImpl implements IProjectService {
                     List<Project> list1 = new LinkedList<Project>();
                     list1 = projectMapper.selectMyCreateProjects(username);
                     //对list1进行处理:相同的项目名称将所属人员组成一串字符
-                    for (int i = 0; i < list1.size(); i++) {
-                        if (i == 0) {
-                            addShowProjectVo(list, list1, i);//插入相关数据到列表中
-                        } else {
-                            if (list1.get(i).getName().equals(list1.get(i - 1).getName())) {//与上一行项目名称相等时
-                                ShowProjectVo showProjectVo = list.get(list.size() - 1);//获取上一个showProjectVo
-                                showProjectVo.setUsernames(showProjectVo.getUsernames() + "、" + list1.get(i).getUsername());
-                                System.out.println(showProjectVo.getUsernames());
-                                showProjectVo.setUsernamesNickname(showProjectVo.getUsernamesNickname() + "、" + iSysUserService.selectUserByUserName(list1.get(i).getUsername()).getNickName());
-                            } else {//与上一行项目名称不相等时，插入数据
-                                addShowProjectVo(list, list1, i);
-                            }
-                        }
-                    }
+                    getProjectVo(list1, list);
                 }
             }
         }
@@ -92,9 +81,28 @@ public class ProjectServiceImpl implements IProjectService {
      * @return
      */
     @Override
-    public List<Project> getMyProjectsByName(String username) {
-        List<Project> list = projectMapper.selectMyProjectsByName(username);
+    public List getMyProjectsByName(String username) {
+        List<Project> list1 = projectMapper.selectMyProjectsByName(username);
+        List<ShowProjectVo> list = new LinkedList<ShowProjectVo>();
+        getProjectVo(list1, list);//将数据转换为vo，交给前端页面
         return list;
+    }
+
+    private void getProjectVo(List<Project> list1, List<ShowProjectVo> list) {
+        for (int i = 0; i < list1.size(); i++) {
+            if (i == 0) {
+                addShowProjectVo(list, list1, i);//插入相关数据到列表中
+            } else {
+                if (list1.get(i).getName().equals(list1.get(i - 1).getName())) {//与上一行项目名称相等时
+                    ShowProjectVo showProjectVo = list.get(list.size() - 1);//获取上一个showProjectVo
+                    showProjectVo.setUsernames(showProjectVo.getUsernames() + "、" + list1.get(i).getUsername());
+                    System.out.println(showProjectVo.getUsernames());
+                    showProjectVo.setUsernamesNickname(showProjectVo.getUsernamesNickname() + "、" + iSysUserService.selectUserByUserName(list1.get(i).getUsername()).getNickName());
+                } else {//与上一行项目名称不相等时，插入数据
+                    addShowProjectVo(list, list1, i);
+                }
+            }
+        }
     }
 
     /**
@@ -104,9 +112,11 @@ public class ProjectServiceImpl implements IProjectService {
      * @return
      */
     @Override
-    public List<Project> getMycCompletedProjectsByName(String username) {
-        List<Project> list = projectMapper.selectMycCompletedProjectsByName(username);
-        return null;
+    public List getMycCompletedProjectsByName(String username) {
+        List<Project> list1 = projectMapper.selectMycCompletedProjectsByName(username);
+        List<ShowProjectVo> list = new LinkedList<ShowProjectVo>();
+        getProjectVo(list1, list);//将数据转换为vo，交给前端页面
+        return list;
     }
 
     /**

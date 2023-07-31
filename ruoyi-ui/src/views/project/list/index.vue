@@ -49,6 +49,7 @@
       <el-row type="flex" align="middle" class="table-row">
         <el-table
           :data="tableData"
+          :key="Math.random()"
           :header-cell-style="{'text-align':'center',background:'#eef1f6',color:'#606266'}"
           :cell-style="{'text-align':'center'}"
           @row-click="handleRowClick"
@@ -98,7 +99,6 @@ export default {
       /*操作行数据绑定*/
       name: "",  //项目名
       showProject: "0",//下拉框选择项目显示方式,默认查询我创建的
-
       /*表格数据和表头列都需要动态指定，由后端返回*/
       tableData: [],
       /*表头修改*/
@@ -134,70 +134,6 @@ export default {
         width: '',
       }, {
         prop: 'projectStatusDescribe',
-        label: '项目状态',
-        sortable: true,
-        width: 150
-      }
-      ],
-      tableHeader1: [{
-        prop: 'name',
-        label: '项目名称',
-        sortable: false,
-        width: 280
-      }, {
-        prop: 'usernames',
-        label: '所属人员',
-        sortable: false,
-        width: 280
-      }, {
-        prop: 'grade',
-        label: '待办等级',
-        sortable: true,
-        width: 300
-      }, {
-        prop: 'publishTime',
-        label: '发布时间',
-        sortable: true,
-        width: 250
-      }, {
-        prop: 'projectPermission',
-        label: '项目权限',
-        sortable: true,
-        width: '',
-      }, {
-        prop: 'projectStatus',
-        label: '项目状态',
-        sortable: true,
-        width: 150
-      }
-      ],
-      tableHeader2: [{
-        prop: 'name',
-        label: '项目名称',
-        sortable: false,
-        width: 280
-      }, {
-        prop: 'usernames',
-        label: '所属人员',
-        sortable: false,
-        width: 280
-      }, {
-        prop: 'grade',
-        label: '待办等级',
-        sortable: true,
-        width: 300
-      }, {
-        prop: 'publishTime',
-        label: '发布时间',
-        sortable: true,
-        width: 250
-      }, {
-        prop: 'projectPermission',
-        label: '项目权限',
-        sortable: true,
-        width: '',
-      }, {
-        prop: 'projectStatus',
         label: '项目状态',
         sortable: true,
         width: 150
@@ -243,27 +179,29 @@ export default {
       console.log('选中的值:', value);
       const username = this.$store.state.user.name
       switch (value) {
-        case 0:
+        case "0":
           //已创建列表：自己创建项目列表
-          this.listMyCreateProjectsByName(username).then(res => {
+          listMyCreateProjectsByName(username).then(res => {
             console.log(res)
             if (res.code === 200) {//查询成功
               this.tableData = res.data
             }
           });
           break;
-        case 1:
+        case "1":
+          console.log("待处理项目")
           //待处理项目：自己为项目处理人员
-          this.listMyProjectsByName(username).then(res => {
+          listMyProjectsByName(username).then(res => {
+
             console.log(res)
             if (res.code === 200) {//查询成功
               this.tableData = res.data
             }
           });
           break;
-        case 2:
+        case "2":
           //已处理项目
-          this.listMyCompletedProjectsByName(username).then(res => {
+          listMyCompletedProjectsByName(username).then(res => {
             console.log(res)
             if (res.code === 200) {//查询成功
               this.tableData = res.data
