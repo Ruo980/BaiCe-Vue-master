@@ -44,6 +44,18 @@ public class ProjectServiceImpl implements IProjectService {
         return 0;
     }
 
+    /**
+     * 获取全部项目，无论项目何种状态，只要为自己处理或创建的
+     *
+     * @param username
+     * @return
+     */
+    @Override
+    public List<Project> getMyAllProjects(String username) {
+        List<Project> list = projectMapper.selectMyAllProjects(username);
+        return list;
+    }
+
     @Override
     public List getProjects(String name, String username, int identity, int statusMethod) {
         List<ShowProjectVo> list = new LinkedList<ShowProjectVo>();
@@ -71,6 +83,30 @@ public class ProjectServiceImpl implements IProjectService {
             }
         }
         return list;
+    }
+
+    /**
+     * 查询项目业务：获取我需要处理的所有项目
+     *
+     * @param username
+     * @return
+     */
+    @Override
+    public List<Project> getMyProjectsByName(String username) {
+        List<Project> list = projectMapper.selectMyProjectsByName(username);
+        return list;
+    }
+
+    /**
+     * 查询项目业务：获取我已经完成的项目
+     *
+     * @param username
+     * @return
+     */
+    @Override
+    public List<Project> getMycCompletedProjectsByName(String username) {
+        List<Project> list = projectMapper.selectMycCompletedProjectsByName(username);
+        return null;
     }
 
     /**

@@ -17,9 +17,26 @@
         VALUES (#{name}, #{publisher}, #{publishTime}, #{endTime}, #{username}, #{grade}, #{projectPermission},
                 #{projectStatus})
     </insert>
+    <select id="selectMyAllProjects" resultType="com.ruoyi.project.dao.model.Project">
+        SELECT *
+        FROM lry_project
+        WHERE username = #{username} OR publisher = #{usernanme}
+    </select>
     <select id="selectMyCreateProjects" resultMap="projectResultMap">
         SELECT *
         FROM lry_project
         WHERE publisher = #{publisher}
+    </select>
+    <select id="selectMyProjectsByName" resultType="com.ruoyi.project.dao.model.Project">
+        SELECT *
+        FROM lry_project
+        WHERE username = #{username}
+          AND project_status = 0
+    </select>
+    <select id="selectMycCompletedProjectsByName" resultType="com.ruoyi.project.dao.model.Project">
+        SELECT *
+        FROM lry_project
+        WHERE username = #{username}
+          AND (project_status = 0 OR project_status = 1)
     </select>
 </mapper>

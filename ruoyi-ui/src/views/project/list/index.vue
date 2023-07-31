@@ -27,7 +27,7 @@
           显示:
         </el-col>
         <el-col :span="6" style="text-align: left">
-          <el-select v-model="showProject" placeholder="请选择">
+          <el-select v-model="showProject" @change="handleChange" placeholder="请选择">
             <el-option
               key="0"
               label="已创建项目"
@@ -86,7 +86,7 @@
 <script>
 
 import ProjectDialog from "@/components/ProjectDialog/index.vue";
-import {listMyCreateProject} from "@/api/manager/project";
+import {listMyCompletedProjectsByName, listMyCreateProjectsByName, listMyProjectsByName} from "@/api/manager/project";
 
 export default {
   name: "Project",
@@ -101,7 +101,7 @@ export default {
 
       /*表格数据和表头列都需要动态指定，由后端返回*/
       tableData: [],
-
+      /*表头修改*/
       tableHeader0: [{
         prop: 'name',
         label: '项目名称',
@@ -210,15 +210,14 @@ export default {
     this.tableHeader = this.tableHeader0
     this.showMyCreateProject()
   }, methods: {
-
     getTag(index, row) {
-      if(row.gradeDescribe === "不重要不紧急"){
+      if (row.gradeDescribe === "不重要不紧急") {
         return 'primary'
-      }else if(row.gradeDescribe === "重要不紧急"){
+      } else if (row.gradeDescribe === "重要不紧急") {
         return 'success'
-      }else if(row.gradeDescribe === "紧急不重要"){
+      } else if (row.gradeDescribe === "紧急不重要") {
         return 'warning'
-      }else{//重要且紧急
+      } else {//重要且紧急
         return 'danger'
       }
     },
@@ -229,18 +228,57 @@ export default {
     //进入页面时获取当前用户创建的项目
     showMyCreateProject() {
       const username = this.$store.state.user.name
-      listMyCreateProject(username).then(res => {
+      listMyCreateProjectsByName(username).then(res => {
         console.log(res)
         if (res.code === 200) {//查询成功
           this.tableData = res.data
         }
       })
     },
+    /**
+     * 处理下拉框选项事件：已创建项目、待处理项目、已处理项目
+     * @param value
+     */
+    handleChange(value) {
+      console.log('选中的值:', value);
+      const username = this.$store.state.user.name
+      switch (value) {
+        case 0:
+          //已创建列表：自己创建项目列表
+          this.listMyCreateProjectsByName(username).then(res => {
+            console.log(res)
+            if (res.code === 200) {//查询成功
+              this.tableData = res.data
+            }
+          });
+          break;
+        case 1:
+          //待处理项目：自己为项目处理人员
+          this.listMyProjectsByName(username).then(res => {
+            console.log(res)
+            if (res.code === 200) {//查询成功
+              this.tableData = res.data
+            }
+          });
+          break;
+        case 2:
+          //已处理项目
+          this.listMyCompletedProjectsByName(username).then(res => {
+            console.log(res)
+            if (res.code === 200) {//查询成功
+              this.tableData = res.data
+            }
+          });
+          //已处理项目：自己已经处理完成项目
+          break;
 
-    //点击获取当前用户创建的项目：与上面的不同在于考虑搜索栏信息
-    showMyCreateProjectByName() {
-
+      }
+      // 在这里添加您的事件处理逻辑
     },
+
+
+    //点击待处理项目
+
 
     //子组件传来事件处理函数，修改value值使弹窗消失
     updateValue(value) {
@@ -253,20 +291,20 @@ export default {
      * 2.判断项目的权限：如果不可编辑也不能进入页面
      * @param row
      */
-    handleRowClick(row){
+    handleRowClick(row) {
       console.log(row)
       /*
       * 当项目权限为"成员的"或者"公开(不可编辑)"则进入编辑页
       * 否则不允许编辑
       * */
       console.log(row.projectPermission)
-      if(row.projectPermission ==="公开(可编辑的)" || row.projectPermission ==="成员的"){
+      if (row.projectPermission === "公开(可编辑的)" || row.projectPermission === "成员的") {
         console.log("进入编辑页")
-        this.$router.push({name:'Edit'})
-      }else if(row.projectPermission === "公开(不可编辑)"){
+        this.$router.push({name: 'Edit'})
+      } else if (row.projectPermission === "公开(不可编辑)") {
         console.log("进入详情页")
-        this.$router.push({name:'Details'})
-      }else{
+        this.$router.push({name: 'Details'})
+      } else {
         console.log("成员的")
       }
 

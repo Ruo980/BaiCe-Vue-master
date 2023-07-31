@@ -24,6 +24,13 @@ public interface IProjectService {
     int saveProject(ProjectVo projectVo);
 
     /**
+     * 获取全部项目，无论项目何种状态，只要为自己处理或创建的
+     * @param username
+     * @return
+     */
+    List<Project> getMyAllProjects(String username);
+
+    /**
      * 查询项目业务：查询的项目是否有关键词模糊查询；是发布的还是接受的。判断查询依据任务状态：无限制、正在受理、完成成功、处理失败
      * 因此主要由三个参数进行限制：
      * 一个是项目名称：支持模糊查询
@@ -36,4 +43,19 @@ public interface IProjectService {
     List<Project> getProjects(String name, String username, int identity, int statusMethod);
 
 
+    /**
+     * 查询项目业务：获取我需要处理的所有项目
+     *
+     * @param username
+     * @return
+     */
+    List<Project> getMyProjectsByName(String username);
+
+    /**
+     * 查询项目业务：获取我已经完成的项目
+     *
+     * @param username
+     * @return
+     */
+    List<Project> getMycCompletedProjectsByName(String username);
 }

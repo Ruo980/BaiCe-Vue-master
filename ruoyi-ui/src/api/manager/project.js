@@ -20,15 +20,47 @@ export function createProject(data){
   })
 }
 
-//获取用户创建的所有项目
-export function listMyCreateProject(username) {
+/**
+ * 初始化表格：无论该项目处于何种状态，将用户创建与所处理的项目全部查询出来
+ *
+ */
+export function listMyAllProjectsByname(username) {
   return request({
-    url: '/manager/project/'+username,//该接口已经写好了
+    url: '/manager/project/all/'+username,//该接口已经写好了
+    method: 'get'
+  })
+}
+/**
+ * 获取用户创建的所有项目
+ * @param username
+ * @returns {*}
+ */
+export function listMyCreateProjectsByName(username) {
+  return request({
+    url: '/manager/project/created/'+username,//该接口已经写好了
     method: 'get'
   })
 }
 
-export function listMyCreateProjectByName() {
+/**
+ * 查询我的项目：即获取我本身需要处理的项目
+ * @param username
+ */
+export  function listMyProjectsByName(username) {
+  return request({
+    url:'/manager/project/my/'+username,//该
+    method: 'get'
+  })
+}
 
+
+/**
+ * 已处理项目：我已经完成的所有项目
+ */
+export function listMyCompletedProjectsByName(username) {
+  return request({
+    url:'/manager/project/completed/'+username,//该
+    method: 'get'
+  })
 }
 
