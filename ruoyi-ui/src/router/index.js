@@ -99,11 +99,6 @@ export const constantRoutes = [
         name: 'Project',
         meta: { title: '项目管理', icon: 'user' },//面包屑名称和图标
       },{
-        path: 'edit',//子路径不要添加，即/project路径时两个组件，layout嵌套project
-        component: () => import('@/views/project/edit/index.vue'),
-        name: 'Edit',
-        meta: { title: '项目设计', icon: 'user' },//面包屑名称和图标
-      },{
         path: 'details',//子路径不要添加，即/project路径时两个组件，layout嵌套project
         component: () => import('@/views/project/details/index.vue'),
         name: 'Details',

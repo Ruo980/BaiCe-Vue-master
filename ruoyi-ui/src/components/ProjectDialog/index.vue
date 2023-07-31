@@ -95,8 +95,8 @@ export default {
       usernamesOptions: [], //所属用户下拉框
       /*可见即可编辑*/
       projectPermissionOptions: [{
-        "label": "公开",
-        "value": "公开"
+        "label": "公开的",
+        "value": "公开的"
       }, {
         "label": "成员的",
         "value": "成员的"

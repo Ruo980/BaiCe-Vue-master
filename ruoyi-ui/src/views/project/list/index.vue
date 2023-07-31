@@ -75,6 +75,17 @@
           </el-table-column>
         </el-table>
       </el-row>
+      <el-row type="flex" align="middle" class="table-row">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-sizes="[10,100,150]"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="totalItems"
+        ></el-pagination>
+      </el-row>
     </div>
 
     <!--两个div避免project-container居中影响弹出层表单-->
@@ -95,50 +106,58 @@ export default {
   data() {
     return {
       value: false,//弹出层数据是否显示,为了实现双向绑定必须使用value
-
       /*操作行数据绑定*/
       name: "",  //项目名
       showProject: "0",//下拉框选择项目显示方式,默认查询我创建的
       /*表格数据和表头列都需要动态指定，由后端返回*/
-      tableData: [],
+      resData: [],//请求得到的全部数据
+      tableData: [],//按页显示的结果
+      pageSize: 10, // 默认每页显示的条数
+      currentPage: 1, // 当前页码
+      totalItems:0,//请求的数据总长度
       /*表头修改*/
       tableHeader0: [{
         prop: 'name',
         label: '项目名称',
         sortable: false,
         width: 300
-      }, {
+      },
+        {
         prop: 'usernames',
         label: '所属人员',
         sortable: false,
         width: 280
-      }, {
+      },
+        {
         prop: 'gradeDescribe',
         label: '待办等级',
         sortable: true,
         width: 300
-      }, {
+      },
+        {
         prop: 'publishTime',
         label: '发布时间',
         sortable: true,
         width: 250
-      }, {
+      },
+        {
         prop: 'endTime',
         label: '结束时间',
         sortable: true,
         width: 250
-      }, {
+      },
+        {
         prop: 'projectPermission',
         label: '项目权限',
         sortable: true,
         width: '',
-      }, {
+      },
+        {
         prop: 'projectStatusDescribe',
         label: '项目状态',
         sortable: true,
         width: 150
-      }
-      ],
+      }],
       // 设置表头数据
       tableHeader: this.tableHeader0
     }
@@ -157,17 +176,30 @@ export default {
         return 'danger'
       }
     },
+    /**
+     * 弹出项目创建对话框
+     */
     showDialog() {
       //不使用路由，而是使用组件显示不显示来
       this.value = true;//弹窗可视化
     },
-    //进入页面时获取当前用户创建的项目
+    /**
+     * 进入页面时获取当前用户创建的项目
+     */
     showMyCreateProject() {
       const username = this.$store.state.user.name
       listMyCreateProjectsByName(username).then(res => {
         console.log(res)
         if (res.code === 200) {//查询成功
-          this.tableData = res.data
+          this.resData = res.data
+          this.totalItems = res.data.length
+          if (this.totalItems > this.pageSize) {
+            for (let index = 0; index < this.pageSize; index++) {
+              this.tableData.push(this.resData[index]);
+            }
+          } else {
+            this.tableData = this.resData;
+          }
         }
       })
     },
@@ -184,7 +216,15 @@ export default {
           listMyCreateProjectsByName(username).then(res => {
             console.log(res)
             if (res.code === 200) {//查询成功
-              this.tableData = res.data
+              this.resData = res.data
+              this.totalItems = res.data.length
+              if (this.totalItems > this.pageSize) {
+                for (let index = 0; index < this.pageSize; index++) {
+                  this.tableData.push(this.resData[index]);
+                }
+              } else {
+                this.tableData = this.resData;
+              }
             }
           });
           break;
@@ -192,10 +232,17 @@ export default {
           console.log("待处理项目")
           //待处理项目：自己为项目处理人员
           listMyProjectsByName(username).then(res => {
-
             console.log(res)
             if (res.code === 200) {//查询成功
-              this.tableData = res.data
+              this.resData = res.data
+              this.totalItems = res.data.length
+              if (this.totalItems > this.pageSize) {
+                for (let index = 0; index < this.pageSize; index++) {
+                  this.tableData.push(this.resData[index]);
+                }
+              } else {
+                this.tableData = this.resData;
+              }
             }
           });
           break;
@@ -204,7 +251,15 @@ export default {
           listMyCompletedProjectsByName(username).then(res => {
             console.log(res)
             if (res.code === 200) {//查询成功
-              this.tableData = res.data
+              this.resData = res.data
+              this.totalItems = res.data.length
+              if (this.totalItems > this.pageSize) {
+                for (let index = 0; index < this.pageSize; index++) {
+                  this.tableData.push(this.resData[index]);
+                }
+              } else {
+                this.tableData = this.resData;
+              }
             }
           });
           //已处理项目：自己已经处理完成项目
@@ -224,29 +279,46 @@ export default {
     },
 
     /**
-     * 单击行事件：在进行具体业务操作前有两个判断
-     * 1.要看单击行进入编辑页还是详情页：主要判断依据projectPermission
-     * 2.判断项目的权限：如果不可编辑也不能进入页面
+     * 单击行事件：只要可进就是可编辑
+     *
      * @param row
      */
     handleRowClick(row) {
       console.log(row)
-      /*
-      * 当项目权限为"成员的"或者"公开(不可编辑)"则进入编辑页
-      * 否则不允许编辑
-      * */
-      console.log(row.projectPermission)
-      if (row.projectPermission === "公开(可编辑的)" || row.projectPermission === "成员的") {
-        console.log("进入编辑页")
-        this.$router.push({name: 'Edit'})
-      } else if (row.projectPermission === "公开(不可编辑)") {
-        console.log("进入详情页")
-        this.$router.push({name: 'Details'})
-      } else {
-        console.log("成员的")
-      }
+      console.log("进入详情页:可编辑可查看")
+      this.$router.push({name: 'Details'})
+    },
 
-    }
+
+    //下部分页功能方法
+    // 每页显示条数改变触发
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+      this.pageSize = val;
+      this.handleCurrentChange(1);
+    },
+    // 当前页改变触发
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+      this.currentPage = val;
+      // 判断是否为搜索的数据,传入对应值
+      if (!this.flag) {
+        this.currentChangePage(this.resData);
+      } else {
+        this.currentChangePage(this.filterTableData);
+      }
+    },
+    // 根据分页，确定当前显示的数据
+    currentChangePage(list) {
+      let fromNum = (this.currentPage - 1) * this.pageSize;
+      let toNum = this.currentPage * this.pageSize;
+      this.tableData = [];
+      for (; fromNum < toNum; fromNum++) {
+        if (list[fromNum]) {
+          this.tableData.push(list[fromNum]);
+        }
+      }
+    },
 
   }
 }
